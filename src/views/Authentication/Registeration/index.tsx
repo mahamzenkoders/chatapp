@@ -3,21 +3,26 @@ import { FC } from 'react';
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Formik, Field, Form, ErrorMessage } from 'formik';
+import { RegistrationSchema } from '@/schema/registeration.schema';
 
 interface IRegistrationViewProps {}
 
 const RegistrationView: FC<IRegistrationViewProps> = () => {
-  const [firstname, setfirstname] = useState('');
-  const [lastname, setlastname] = useState('');
   const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (firstname && lastname) {
-      console.log(firstname);
-      console.log(lastname);
+  interface Values {
+    firstname: string;
+    lastname: string;
+    email: string;
+    password: string;
+  }
+
+  const handleSubmit = async (values: Values) => {
+    const { email, password } = values;
+    if (email && password) {
+      console.log(values);
       router.push('/');
     } else {
       console.log('error');
@@ -25,56 +30,108 @@ const RegistrationView: FC<IRegistrationViewProps> = () => {
   };
 
   return (
-    <div className='flex justify-center items-center h-screen'>
+    <div className='flex justify-center items-center h-screen bg-amber-200'>
       <div>
         <h2 className='text-2xl font-bold text-center mt-4'>
           Registration Form
         </h2>
-        <form
+        <Formik
+          initialValues={{
+            firstname: '',
+            lastname: '',
+            email: '',
+            password: '',
+          }}
           onSubmit={handleSubmit}
-          className='mt-6'
+          validationSchema={RegistrationSchema}
         >
-          <div className='mb-4'>
-            <Label
-              htmlFor='username'
-              className='block text-sm font-medium text-gray-700'
-            >
-              First Name
-            </Label>
-            <Input
-              id='username'
-              type='text'
-              value={firstname}
-              onChange={e => setfirstname(e.target.value)}
-              required
-              className='mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-500'
-            />
-          </div>
-          <div className='mb-6'>
-            <Label
-              htmlFor='password'
-              className='block text-sm font-medium text-gray-700'
-            >
-              Last Name
-            </Label>
-            <Input
-              id='password'
-              type='password'
-              value={lastname}
-              onChange={e => setlastname(e.target.value)}
-              required
-              className='mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-500'
-            />
-          </div>
-          <div className='mt-6'>
-            <Button
-              type='submit'
-              className='w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition'
-            >
-              SignUp
-            </Button>
-          </div>
-        </form>
+          <Form className='flex flex-col gap-4'>
+            <div>
+              <Label
+                htmlFor='firstname'
+                className='block text-sm font-medium text-gray-700'
+              >
+                FirstName
+              </Label>
+              <Field
+                id='firstname'
+                type='text'
+                name='firstname'
+                required
+                className='mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-500'
+              />
+              <ErrorMessage
+                name='firstname'
+                className='text-red-500'
+              />
+            </div>
+            <div>
+              <Label
+                htmlFor='lastname'
+                className='block text-sm font-medium text-gray-700'
+              >
+                Email
+              </Label>
+              <Field
+                id='lastname'
+                type='text'
+                name='lastname'
+                required
+                className='mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-500'
+              />
+              <ErrorMessage
+                name='lastname'
+                className='text-red-500'
+              />
+            </div>
+            <div>
+              <Label
+                htmlFor='email'
+                className='block text-sm font-medium text-gray-700'
+              >
+                Email
+              </Label>
+              <Field
+                id='email'
+                type='text'
+                name='email'
+                required
+                className='mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-500'
+              />
+              <ErrorMessage
+                name='email'
+                className='text-red-'
+              />
+            </div>
+            <div>
+              <Label
+                htmlFor='password'
+                className='block text-sm font-medium text-gray-700'
+              >
+                Password
+              </Label>
+              <Field
+                id='password'
+                type='password'
+                name='password'
+                required
+                className='mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-500'
+              />
+              <ErrorMessage
+                name='password'
+                className='text-red-500 mt-4'
+              />
+            </div>
+            <div>
+              <Button
+                type='submit'
+                className='w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition'
+              >
+                Sign Up
+              </Button>
+            </div>
+          </Form>
+        </Formik>
       </div>
     </div>
   );

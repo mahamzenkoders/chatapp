@@ -1,22 +1,25 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Link from 'next/link';
+import { Formik, Field, Form, ErrorMessage } from 'formik';
+import { loginSchema } from '@/schema/login.schema';
+
+interface Values {
+  email: string;
+  password: string;
+}
 
 const LoginPage = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
   const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (username && password) {
-      console.log(username);
-      console.log(password);
+  const handleSubmit = async (values: Values) => {
+    const { email, password } = values;
+    if (email && password) {
+      console.log(values);
       router.push('/');
     } else {
       console.log('error');
@@ -27,60 +30,65 @@ const LoginPage = () => {
     <div className='flex justify-center items-center h-screen'>
       <div>
         <h2 className='text-2xl font-bold text-center mt-4'>Login</h2>
-        <form
+        <Formik
+          initialValues={{ email: '', password: '' }}
           onSubmit={handleSubmit}
-          className='mt-6'
+          validationSchema={loginSchema}
         >
-          <div className='mb-4'>
-            <Label
-              htmlFor='username'
-              className='block text-sm font-medium text-gray-700'
-            >
-              Email
-            </Label>
-
-            <Input
-              id='username'
-              type='text'
-              value={username}
-              onChange={e => setUsername(e.target.value)}
-              required
-              className='mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-500'
-            />
-          </div>
-          <div className='mb-6'>
-            <Label
-              htmlFor='password'
-              className='block text-sm font-medium text-gray-700'
-            >
-              Password
-            </Label>
-            <Input
-              id='password'
-              type='password'
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              required
-              className='mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-500'
-            />
-          </div>
-          <div className='mt-6'>
-            <Button
-              type='submit'
-              className='w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition'
-            >
-              Log In
-            </Button>
-          </div>
-          <div className='mt-5'>
-            <Link
-              className='text-blue-600'
-              href={'/auth/register'}
-            >
-              new here? Click to Register.
-            </Link>
-          </div>
-        </form>
+          <Form className='flex flex-col gap-4'>
+            <div>
+              <Label
+                htmlFor='email'
+                className='block text-sm font-medium text-gray-700'
+              >
+                Email
+              </Label>
+              <Field
+                id='email'
+                type='text'
+                name='email'
+                required
+                className='mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-500'
+              />
+              <ErrorMessage
+                name='email'
+                className='text-red-'
+              />
+            </div>
+            <div>
+              <Label
+                htmlFor='password'
+                className='block text-sm font-medium text-gray-700'
+              >
+                Password
+              </Label>
+              <Field
+                id='password'
+                type='password'
+                name='password'
+                required
+                className='mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-500'
+              />
+              <ErrorMessage
+                name='password'
+                className='text-red-500 mt-4'
+              />
+            </div>
+            <div>
+              <Button
+                type='submit'
+                className='w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition'
+              >
+                Log In
+              </Button>
+            </div>
+          </Form>
+        </Formik>
+        <div className='mt-4'>
+          <Link href={'/auth/register'}>
+            <span className='text-blue-600'>New Here? Click To Register</span>
+          </Link>
+        </div>
       </div>
     </div>
   );
