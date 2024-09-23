@@ -1,0 +1,16 @@
+/* Only global styling CSS Rules should be placed here, for component specific styling use CSS Modules */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+.scrollbar-thin {
+    scrollbar-width:thin;
+    scrollbar-color: #98abc5 #E5E7EB; 
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 2px; 
+  }
+
