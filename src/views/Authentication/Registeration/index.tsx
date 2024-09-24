@@ -1,11 +1,13 @@
 'use client';
 import { FC } from 'react';
-import React, { useState } from 'react';
+import React from 'react';
 import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import { RegistrationSchema } from '@/schema/registeration.schema';
+import { Button } from '@/components/ui/button';
+import axios from 'axios';
+import { setCookieClientSideFn } from '@/utils/storage.util';
 
 interface IRegistrationViewProps {}
 
@@ -13,32 +15,37 @@ const RegistrationView: FC<IRegistrationViewProps> = () => {
   const router = useRouter();
 
   interface Values {
-    firstname: string;
-    lastname: string;
+    firstName: string;
+    lastName: string;
     email: string;
     password: string;
   }
 
   const handleSubmit = async (values: Values) => {
-    const { email, password } = values;
-    if (email && password) {
-      console.log(values);
+    console.log(values);
+    try {
+      const res = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/register`,
+        values,
+      );
+      console.log(res.data);
+      setCookieClientSideFn('accessToken', res.data.accessToken);
       router.push('/');
-    } else {
-      console.log('error');
+    } catch (err) {
+      console.error(err);
     }
   };
 
   return (
     <div className='flex justify-center items-center h-screen bg-amber-200'>
-      <div>
+      <div className='bg-slate-300 p-32 rounded'>
         <h2 className='text-2xl font-bold text-center mt-4'>
           Registration Form
         </h2>
         <Formik
           initialValues={{
-            firstname: '',
-            lastname: '',
+            firstName: '',
+            lastName: '',
             email: '',
             password: '',
           }}
@@ -48,39 +55,41 @@ const RegistrationView: FC<IRegistrationViewProps> = () => {
           <Form className='flex flex-col gap-4'>
             <div>
               <Label
-                htmlFor='firstname'
+                htmlFor='firstName'
                 className='block text-sm font-medium text-gray-700'
               >
-                FirstName
+                First Name
               </Label>
               <Field
-                id='firstname'
+                id='firstName'
                 type='text'
-                name='firstname'
+                name='firstName'
                 required
                 className='mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-500'
               />
               <ErrorMessage
-                name='firstname'
+                name='firstName'
+                component='div'
                 className='text-red-500'
               />
             </div>
             <div>
               <Label
-                htmlFor='lastname'
+                htmlFor='lastName'
                 className='block text-sm font-medium text-gray-700'
               >
-                Email
+                Last Name
               </Label>
               <Field
-                id='lastname'
+                id='lastName'
                 type='text'
-                name='lastname'
+                name='lastName'
                 required
                 className='mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-500'
               />
               <ErrorMessage
-                name='lastname'
+                name='lastName'
+                component='div'
                 className='text-red-500'
               />
             </div>
@@ -100,7 +109,8 @@ const RegistrationView: FC<IRegistrationViewProps> = () => {
               />
               <ErrorMessage
                 name='email'
-                className='text-red-'
+                component='div'
+                className='text-red-500'
               />
             </div>
             <div>
@@ -119,6 +129,7 @@ const RegistrationView: FC<IRegistrationViewProps> = () => {
               />
               <ErrorMessage
                 name='password'
+                component='div'
                 className='text-red-500 mt-4'
               />
             </div>

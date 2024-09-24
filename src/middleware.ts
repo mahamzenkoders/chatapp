@@ -9,17 +9,17 @@ export function middleware(req: NextRequest) {
   if (pathname === '/') {
     return NextResponse.redirect(new URL('/chat', req.url));
   }
-  // const publicRoutes = ["/login", "/signup"];
+  const publicRoutes = ["/auth/register", "/auth/register"];
 
-  // const protectedRoutes = ["/"];
+  const protectedRoutes = ["/",'/chat'];
 
-  // if (token && publicRoutes.includes(pathname)) {
-  //   return NextResponse.redirect(new URL("/", req.url));
-  // }
+  if (token && publicRoutes.includes(pathname)) {
+    return NextResponse.redirect(new URL("/", req.url));
+  }
 
-  // if (!token && protectedRoutes.includes(pathname)) {
-  //   return NextResponse.redirect(new URL("/login", req.url));
-  // }
+  if (!token && protectedRoutes.includes(pathname)) {
+    return NextResponse.redirect(new URL("/auth/login", req.url));
+  }
 
   return NextResponse.next();
 }

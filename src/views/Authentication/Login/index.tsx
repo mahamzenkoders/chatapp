@@ -7,6 +7,8 @@ import { Label } from '@/components/ui/label';
 import Link from 'next/link';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import { loginSchema } from '@/schema/login.schema';
+import { setCookieClientSideFn } from '@/utils/storage.util';
+import axios from 'axios';
 
 interface Values {
   email: string;
@@ -17,19 +19,25 @@ const LoginPage = () => {
   const router = useRouter();
 
   const handleSubmit = async (values: Values) => {
-    const { email, password } = values;
-    if (email && password) {
-      console.log(values);
+    console.log(values);
+    try {
+      const res = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
+        values,
+      );
+      console.log(res.data);
+      setCookieClientSideFn('accessToken', res.data.accessToken);
+      setCookieClientSideFn('currentUser', res.data.currentUser);
       router.push('/');
-    } else {
-      console.log('error');
+    } catch (err) {
+      console.error(err);
     }
   };
 
   return (
-    <div className='flex justify-center items-center h-screen'>
-      <div>
-        <h2 className='text-2xl font-bold text-center mt-4'>Login</h2>
+    <div className='flex justify-center items-center h-screen bg-amber-200'>
+      <div className='bg-slate-300 p-32 rounded'>
+        <h2 className='text-2xl font-bold text-center mt-4'>Login Form</h2>
         <Formik
           initialValues={{ email: '', password: '' }}
           onSubmit={handleSubmit}
@@ -52,7 +60,8 @@ const LoginPage = () => {
               />
               <ErrorMessage
                 name='email'
-                className='text-red-'
+                component='div'
+                className='text-red-500'
               />
             </div>
             <div>
@@ -71,6 +80,7 @@ const LoginPage = () => {
               />
               <ErrorMessage
                 name='password'
+                component='div'
                 className='text-red-500 mt-4'
               />
             </div>
