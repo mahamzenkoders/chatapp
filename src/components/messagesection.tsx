@@ -31,7 +31,7 @@ const MessageSection = () => {
     console.error('Error parsing user cookie:', error);
     userObject = null;
   }
-  
+
   const userId = userObject?.id;
 
   const [sendmsg, setSendMsg] = useState<SendMessage[] | []>([]);
