@@ -13,10 +13,29 @@ import { getCookieFn } from '@/utils/storage.util';
 import { SkeletonChat } from './skeletons/chatSkeleton';
 import { SkeletonSearch } from './skeletons/searchskeleton';
 import { Chats } from '@/types/Interfaces/chat.interface';
+import { useRouter } from 'next/navigation';
+import { socket } from '@/app/socket/socketconfig';
 
 const SearchChats = () => {
   const [chats, setChats] = useState<Chats[]>([]);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
+  const handleRoom = (roomID: string, roomName: string) => {
+    const token = getCookieFn('accessToken');
+
+    socket.emit(
+      'JOIN_SINGLE_ROOM',
+      {
+        type: 'direct',
+        roomId: roomID,
+      },
+      (res: any) => {
+        console.log(res);
+      },
+    );
+    router.push(`?id=${roomID}&name=${roomName}`);
+  };
 
   const fetchRooms = async () => {
     try {
@@ -37,7 +56,7 @@ const SearchChats = () => {
 
   useEffect(() => {
     fetchRooms();
-  }, [chats]);
+  }, []);
 
   if (loading) {
     return (
@@ -71,16 +90,22 @@ const SearchChats = () => {
             <CommandGroup heading=''>
               <div className='space-y-1'>
                 {chats?.map(chat => (
-                  <CommandItem key={chat.id}>
-                    {' '}
-                    <div className='bg-gray-800 text-white hover:bg-slate-600 p-3 rounded w-full border flex items-center gap-2 border-gray-300'>
-                      <Avatar>
-                        <AvatarImage src='https://github.com/shadcn.png' />
-                        <AvatarFallback>CN</AvatarFallback>
-                      </Avatar>
-                      {chat.name}
-                    </div>
-                  </CommandItem>
+                  <div
+                    onClick={() => {
+                      handleRoom(chat.id, chat.name);
+                    }}
+                  >
+                    <CommandItem key={chat.id}>
+                      {' '}
+                      <div className='bg-gray-800 text-white hover:bg-slate-600 p-3 rounded w-full border flex items-center gap-2 border-gray-300'>
+                        <Avatar>
+                          <AvatarImage src='https://github.com/shadcn.png' />
+                          <AvatarFallback>CN</AvatarFallback>
+                        </Avatar>
+                        {chat.name}
+                      </div>
+                    </CommandItem>
+                  </div>
                 ))}
               </div>
             </CommandGroup>

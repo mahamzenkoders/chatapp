@@ -4,10 +4,15 @@ import React, { useEffect, useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { IoIosPersonAdd } from 'react-icons/io';
 import { Input } from './ui/input';
-import io from 'socket.io-client';
 import { Friend } from '@/types/Interfaces/addfriend';
+import { Bounce, toast, ToastContainer } from 'react-toastify';
+import { socket } from '@/app/socket/socketconfig';
 
-const AddFriend = () => {
+interface AddFriendProps {
+  closeDialog: () => void;
+}
+
+const AddFriend: React.FC<AddFriendProps> = ({ closeDialog }) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [friends, setFriends] = useState<Friend[]>([]);
   const [search, setSearch] = useState<string>('');
@@ -17,11 +22,6 @@ const AddFriend = () => {
     const user = getCookieFn('currentUser');
     const userObject = user && JSON.parse(user);
     const firstName = userObject.firstName;
-    const socket = io('https://zenchat-backend-vnhm.onrender.com', {
-      extraHeaders: {
-        authorization: `Bearer ${token}`,
-      },
-    });
 
     console.log('hello');
 
@@ -30,15 +30,26 @@ const AddFriend = () => {
       {
         type: 'direct',
         participants: [id],
-        name: `${name} & ${firstName} Chat`,
+        name: `${name} ${firstName} Chat`,
       },
       (res: any) => {
+        toast.success('Friend Added Successfully', {
+          position: 'top-center',
+          transition: Bounce,
+        });
         console.log(res);
+        closeDialog();
       },
     );
   };
 
   const fetchUsers = async () => {
+    if (!search) {
+      setFriends([]);
+      setLoading(false);
+      return;
+    }
+
     try {
       const token = getCookieFn('accessToken');
       const res = await axios.get(
@@ -62,7 +73,18 @@ const AddFriend = () => {
   }, [search]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className='gap-4 flex flex-col'>
+        <Input
+          type='text'
+          placeholder='Search for friends...'
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          className='mb-4'
+        />
+        <div>Loading...</div>
+      </div>
+    );
   }
 
   return (

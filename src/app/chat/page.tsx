@@ -5,17 +5,14 @@ import { useState } from 'react';
 import io from 'socket.io-client';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import AddFriend from '@/components/AddFriend';
-import { getCookieFn } from '@/utils/storage.util';
 import MessageSection from '@/components/messagesection';
-
-const token = getCookieFn('accessToken');
-const socket = io('https://zenchat-backend-vnhm.onrender.com', {
-  extraHeaders: {
-    authorization: `Bearer ${token}`,
-  },
-});
+import { socket } from '../socket/socketconfig';
 
 const Chat = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const closeDialog = () => {
+    setIsOpen(false);
+  };
   useEffect(() => {
     socket.on('connect', () => {
       console.log('connected');
@@ -33,14 +30,17 @@ const Chat = () => {
   }, []);
 
   return (
-    <main className='h-screen bg-gray-200 flex'>
+    <main className='h-screen bg-gray-200 flex overflow-hidden'>
       <div className='w-[30%] bg-gray-800 p-6 shadow-md h-full overflow-y-auto  scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200'>
-        <Dialog>
+        <Dialog
+          open={isOpen}
+          onOpenChange={setIsOpen}
+        >
           <DialogTrigger className='bg-blue-600 text-white p-2 w-full rounded mb-8'>
             Add Friend
           </DialogTrigger>
           <DialogContent className='bg-slate-700'>
-            <AddFriend />
+            <AddFriend closeDialog={closeDialog} />
           </DialogContent>
         </Dialog>
         <h2 className='font-bold mb-4 text-white text-lg'>All Chats</h2>

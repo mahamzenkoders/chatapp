@@ -1,32 +1,75 @@
-import React, { useState } from 'react';
-
+import React, { useEffect, useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-
 import { Button } from '@/components/ui/button';
+import { useSearchParams } from 'next/navigation';
 import { SendHorizontal } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { getCookieFn } from '@/utils/storage.util';
+import axios from 'axios';
+import { socket } from '@/app/socket/socketconfig';
+
+interface SendMessage {
+  roomId: string;
+  text: string;
+  createdBy: string;
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+}
 
 const MessageSection = () => {
-  const [sendmsg, setSendMsg] = useState<string[]>(['Hi', 'How are you?']);
-  const [receiveMsg, setreceiveMsg] = useState<string[]>([
-    'Hi',
-    'I am good',
-    'OK',
-  ]);
+  const token = getCookieFn('accessToken');
+  const searchParams = useSearchParams();
+  const roomID = searchParams.get('id');
+  const roomName = searchParams.get('name');
+  const user = getCookieFn('currentUser');
+  const userObject = user && JSON.parse(user);
+  const userId = userObject.id;
+
+  const [sendmsg, setSendMsg] = useState<SendMessage[] | []>([]);
   const [input, setInput] = useState<string>('');
 
-  const handleClick = () => {
+  const responseMessage = async () => {
+    const res = await axios.get(
+      `${process.env.NEXT_PUBLIC_API_URL}/messages/room/${roomID}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+    setSendMsg(res.data);
+  };
+
+  useEffect(() => {
+    responseMessage();
+  }, [roomID, sendmsg]);
+
+  useEffect(() => {
+    socket.on('RECEIVED_MESSAGE', (res: SendMessage) => {
+      console.log('Received message:');
+      setSendMsg(prev => [...prev, res]);
+    });
+  }, []);
+
+  const handleClick = async () => {
     if (input) {
-      setSendMsg(prev => [...prev, input]);
-      console.log(input);
+      socket.emit(
+        'NEW_MESSAGE',
+        { roomId: roomID, message: input },
+        (res: boolean) => {
+          console.log(res);
+        },
+      );
+
       setInput('');
     }
   };
 
   return (
     <div className='flex flex-col justify-between h-full'>
-      <div className=''>
-        <div className='bg-gray-800 p-4 flex items-center border-b border-gray-600 p-4'>
+      <div>
+        <div className='bg-gray-800 flex items-center border-b border-gray-600 p-4'>
           <Avatar className='mr-3'>
             <AvatarImage
               src='https://github.com/shadcn.png'
@@ -35,24 +78,27 @@ const MessageSection = () => {
             />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
-          <h1 className='text-white text-lg font-semibold'>Maham</h1>
+          <h1 className='text-white text-lg font-semibold'>{roomName}</h1>
         </div>
 
-        <div className='flex flex-col space-y-2 p-4 overflow-y-auto '>
-          {receiveMsg.map((rmsg, index) => (
+        <div className='flex flex-col space-y-2 p-4 overflow-y-auto h-[calc(100vh-150px)] scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200'>
+          {sendmsg.map(sendmsgs => (
             <div
-              key={index}
-              className='bg-gray-600 text-white p-3 rounded-lg self-start max-w-xs'
+              key={sendmsgs.id}
+              className={`p-3 rounded-lg ${
+                userId === sendmsgs.createdBy
+                  ? 'self-end bg-blue-600 text-white'
+                  : 'bg-gray-600 text-white self-start'
+              } max-w-xs`}
             >
-              <p>{rmsg}</p>
-            </div>
-          ))}
-          {sendmsg.map((msg, index) => (
-            <div
-              key={index}
-              className='bg-blue-600 text-white p-3 rounded-lg self-end max-w-xs'
-            >
-              <p>{msg}</p>
+              <p>{sendmsgs.text}</p>
+              <span className='text-xs text-gray-300'>
+                {new Date(sendmsgs.createdAt).toLocaleTimeString('en-US', {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  hour12: true,
+                })}
+              </span>
             </div>
           ))}
         </div>
