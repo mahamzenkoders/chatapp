@@ -20,10 +20,17 @@ const AddFriend: React.FC<AddFriendProps> = ({ closeDialog }) => {
   const handleClick = (id: string, name: string) => {
     const token = getCookieFn('accessToken');
     const user = getCookieFn('currentUser');
-    const userObject = user && JSON.parse(user);
-    const firstName = userObject.firstName;
+    let firstName = '';
 
-    console.log('hello');
+    try {
+      const userObject = user ? JSON.parse(user) : null;
+      firstName = userObject?.firstName || 'User';
+    } catch (error) {
+      console.error('Error parsing user object:', error);
+      firstName = 'User';
+    }
+
+    console.log('Creating room for:', name, firstName);
 
     socket.emit(
       'CREATE_ROOM',
@@ -60,9 +67,14 @@ const AddFriend: React.FC<AddFriendProps> = ({ closeDialog }) => {
           },
         },
       );
-      setFriends(res.data);
+      console.log(res.data);
+      if (Array.isArray(res.data)) {
+        setFriends(res.data);
+      } else {
+        console.error('Unexpected response structure:', res.data);
+      }
     } catch (err) {
-      console.log(err);
+      console.error('Error fetching users:', err);
     } finally {
       setLoading(false);
     }
@@ -96,30 +108,32 @@ const AddFriend: React.FC<AddFriendProps> = ({ closeDialog }) => {
         onChange={e => setSearch(e.target.value)}
         className='mb-4'
       />
-      {friends.map(friend => (
-        <div
-          className='flex items-center gap-2 mb-4 justify-between'
-          key={friend.id}
-        >
-          <div className='flex items-center gap-4 text-white'>
-            <Avatar>
-              <AvatarImage src='https://github.com/shadcn.png' />
-              <AvatarFallback>CN</AvatarFallback>
-            </Avatar>
-            <p>
-              {friend.firstName} {friend.lastName}
-            </p>
+      {friends.length > 0 ? (
+        friends.map(friend => (
+          <div
+            className='flex items-center gap-2 mb-4 justify-between'
+            key={friend.id}
+          >
+            <div className='flex items-center gap-4 text-white'>
+              <Avatar>
+                <AvatarImage src='https://github.com/shadcn.png' />
+                <AvatarFallback>CN</AvatarFallback>
+              </Avatar>
+              <p>
+                {friend.firstName} {friend.lastName}
+              </p>
+            </div>
+            <div>
+              <IoIosPersonAdd
+                onClick={() => handleClick(friend.id, friend.firstName)}
+                className='h-9 w-9 text-slate-400 cursor-pointer'
+              />
+            </div>
           </div>
-          <div>
-            <IoIosPersonAdd
-              onClick={() => {
-                handleClick(friend.id, friend.firstName);
-              }}
-              className='h-9 w-9 text-slate-400 cursor-pointer'
-            />
-          </div>
-        </div>
-      ))}
+        ))
+      ) : (
+        <div className='text-white'>No friends found</div>
+      )}
     </div>
   );
 };
