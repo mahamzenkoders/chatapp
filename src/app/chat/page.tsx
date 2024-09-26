@@ -7,9 +7,17 @@ import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import AddFriend from '@/components/AddFriend';
 import MessageSection from '@/components/messagesection';
 import { socket } from '../socket/socketconfig';
+import { Button } from '@/components/ui/button';
+import { removeCookie } from '@/utils/storage.util';
 
 const Chat = () => {
   const [isOpen, setIsOpen] = useState(false);
+
+  const handleLogout = () => {
+    removeCookie('accessToken');
+    removeCookie('currentUser');
+  };
+
   const closeDialog = () => {
     setIsOpen(false);
   };
@@ -43,6 +51,13 @@ const Chat = () => {
             <AddFriend closeDialog={closeDialog} />
           </DialogContent>
         </Dialog>
+        <Button
+          variant={'outline'}
+          className='bg-red-400 text-white p-2 w-full rounded mb-8'
+          onClick={handleLogout}
+        >
+          Logout
+        </Button>
         <h2 className='font-bold mb-4 text-white text-lg'>All Chats</h2>
         <SearchChats />
       </div>

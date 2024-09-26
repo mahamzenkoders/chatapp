@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { useSearchParams } from 'next/navigation';
 import { SendHorizontal } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { getCookieFn } from '@/utils/storage.util';
+import { getCookieFn, removeCookie } from '@/utils/storage.util';
 import axios from 'axios';
 import { socket } from '@/app/socket/socketconfig';
 
