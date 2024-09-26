@@ -23,8 +23,16 @@ const MessageSection = () => {
   const roomID = searchParams.get('id');
   const roomName = searchParams.get('name');
   const user = getCookieFn('currentUser');
-  const userObject = user && JSON.parse(user);
-  const userId = userObject.id;
+
+  let userObject;
+  try {
+    userObject = user ? JSON.parse(user) : null;
+  } catch (error) {
+    console.error('Error parsing user cookie:', error);
+    userObject = null;
+  }
+  
+  const userId = userObject?.id;
 
   const [sendmsg, setSendMsg] = useState<SendMessage[] | []>([]);
   const [input, setInput] = useState<string>('');
