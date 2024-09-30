@@ -1,5 +1,8 @@
-import { Link } from 'lucide-react';
 
+import { connectToDatabase } from "@/source/data.source";
 export default function ChatApp() {
-  return <Link href={'/chat'}>Click here to start chat</Link>;
+
+
+
+  return <div>Chat Application</div>;
 }

@@ -9,13 +9,16 @@ import MessageSection from '@/components/messagesection';
 import { socket } from '../socket/socketconfig';
 import { Button } from '@/components/ui/button';
 import { removeCookie } from '@/utils/storage.util';
+import { useRouter } from 'next/navigation';
 
 const Chat = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
 
   const handleLogout = () => {
     removeCookie('accessToken');
     removeCookie('currentUser');
+    router.push('/auth/login');
   };
 
   const closeDialog = () => {

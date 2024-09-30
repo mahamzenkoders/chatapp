@@ -9,6 +9,8 @@ import { Formik, Field, Form, ErrorMessage } from 'formik';
 import { loginSchema } from '@/schema/login.schema';
 import { setCookieClientSideFn } from '@/utils/storage.util';
 import axios from 'axios';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface Values {
   email: string;
@@ -19,7 +21,6 @@ const LoginPage = () => {
   const router = useRouter();
 
   const handleSubmit = async (values: Values) => {
-    console.log(values);
     try {
       const res = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
@@ -29,8 +30,14 @@ const LoginPage = () => {
       setCookieClientSideFn('accessToken', res.data.accessToken);
       setCookieClientSideFn('currentUser', res.data.currentUser);
       router.push('/');
-    } catch (err) {
+    } catch (err: unknown) {
       console.error(err);
+
+      if (axios.isAxiosError(err)) {
+        toast.error(err.response?.data?.message || 'Login failed');
+      } else {
+        toast.error('An unexpected error occurred');
+      }
     }
   };
 
@@ -100,6 +107,7 @@ const LoginPage = () => {
           </Link>
         </div>
       </div>
+      <ToastContainer />
     </div>
   );
 };
