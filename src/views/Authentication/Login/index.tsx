@@ -23,20 +23,26 @@ const LoginPage = () => {
   const handleSubmit = async (values: Values) => {
     try {
       const res = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`,
         values,
       );
       console.log(res.data);
       setCookieClientSideFn('accessToken', res.data.accessToken);
       setCookieClientSideFn('currentUser', res.data.currentUser);
+
+      toast.success('Login successful!', {
+        autoClose: 1000,
+      });
+
       router.push('/');
     } catch (err: unknown) {
       console.error(err);
-
       if (axios.isAxiosError(err)) {
         toast.error(err.response?.data?.message || 'Login failed');
       } else {
-        toast.error('An unexpected error occurred');
+        toast.error('An unexpected error occurred', {
+          autoClose: 1000,
+        });
       }
     }
   };
@@ -50,58 +56,64 @@ const LoginPage = () => {
           onSubmit={handleSubmit}
           validationSchema={loginSchema}
         >
-          <Form className='flex flex-col gap-4'>
-            <div>
-              <Label
-                htmlFor='email'
-                className='block text-sm font-medium text-gray-700'
-              >
-                Email
-              </Label>
-              <Field
-                id='email'
-                type='text'
-                name='email'
-                required
-                className='mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-500'
-              />
-              <ErrorMessage
-                name='email'
-                component='div'
-                className='text-red-500'
-              />
-            </div>
-            <div>
-              <Label
-                htmlFor='password'
-                className='block text-sm font-medium text-gray-700'
-              >
-                Password
-              </Label>
-              <Field
-                id='password'
-                type='password'
-                name='password'
-                required
-                className='mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-500'
-              />
-              <ErrorMessage
-                name='password'
-                component='div'
-                className='text-red-500 mt-4'
-              />
-            </div>
-            <div>
-              <Button
-                type='submit'
-                className='w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition'
-              >
-                Log In
-              </Button>
-            </div>
-          </Form>
+          {({ isSubmitting }) => (
+            <Form className='flex flex-col gap-4'>
+              <div>
+                <Label
+                  htmlFor='email'
+                  className='block text-sm font-medium text-gray-700'
+                >
+                  Email
+                </Label>
+                <Field
+                  id='email'
+                  type='text'
+                  name='email'
+                  required
+                  className='mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-500'
+                />
+                <ErrorMessage
+                  name='email'
+                  component='div'
+                  className='text-red-500'
+                />
+              </div>
+              <div>
+                <Label
+                  htmlFor='password'
+                  className='block text-sm font-medium text-gray-700'
+                >
+                  Password
+                </Label>
+                <Field
+                  id='password'
+                  type='password'
+                  name='password'
+                  required
+                  className='mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-500'
+                />
+                <ErrorMessage
+                  name='password'
+                  component='div'
+                  className='text-red-500 mt-4'
+                />
+              </div>
+              <div>
+                <Button
+                  type='submit'
+                  className='w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition'
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? 'Logging In...' : 'Log In'}
+                </Button>
+              </div>
+            </Form>
+          )}
         </Formik>
-        <div className='mt-4'>
+        <div className='mt-4 flex flex-col justify-center items-center gap-3'>
+          <Link href={'/auth/forget-password'}>
+            <span className='text-blue-600'>Forgot Password?</span>
+          </Link>
           <Link href={'/auth/register'}>
             <span className='text-blue-600'>New Here? Click To Register</span>
           </Link>

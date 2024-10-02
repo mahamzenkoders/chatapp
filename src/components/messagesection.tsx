@@ -38,15 +38,17 @@ const MessageSection = () => {
   const [input, setInput] = useState<string>('');
 
   const responseMessage = async () => {
-    const res = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_URL}/messages/room/${roomID}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
+    if (roomID) {
+      const res = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/messages/room/${roomID}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         },
-      },
-    );
-    setSendMsg(res.data);
+      );
+      setSendMsg(res.data);
+    }
   };
 
   useEffect(() => {

@@ -1,6 +1,4 @@
 export interface Chats {
-    id: string;
-    name: string;
-  }
-
-  
+  id: string;
+  name: string;
+}

@@ -44,7 +44,7 @@
     "lint": "^0.8.19",
     "lucide-react": "^0.309.0",
     "mysql2": "^3.11.3",
-    "next": "^14.2.3",
+    "next": "^14.2.14",
     "next-logger": "^3.0.2",
     "nodemailer": "^6.9.15",
     "prettier": "^3.2.5",
@@ -65,6 +65,7 @@
     "socket.io-client": "^4.8.0",
     "tailwind-merge": "^2.2.0",
     "typeorm": "^0.3.20",
+    "ws": "^8.18.0",
     "yup": "^1.4.0"
   },
   "devDependencies": {
@@ -74,6 +75,7 @@
     "@types/nodemailer": "^6.4.16",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@types/ws": "^8.5.12",
     "add": "^2.0.6",
     "autoprefixer": "^10.0.1",
     "eslint-config-next": "14.0.4",

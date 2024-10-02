@@ -1,12 +1,9 @@
-
 import { User } from '@/app/entity/User';
 import { getDataSource } from '@/source/data.source';
 import { NextRequest, NextResponse } from 'next/server';
 
-export const GET = async (_req: NextRequest) => {
+export const GET = async (req: NextRequest) => {
   const connection = await getDataSource();
 
-  return NextResponse.json(
-    await connection.getRepository(User).find(),
-  );
+  return NextResponse.json(await connection.getRepository(User).find());
 };

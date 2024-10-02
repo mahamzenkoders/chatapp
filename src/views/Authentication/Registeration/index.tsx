@@ -25,11 +25,12 @@ const RegistrationView: FC<IRegistrationViewProps> = () => {
     console.log(values);
     try {
       const res = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/auth/register`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/register`,
         values,
       );
       console.log(res.data);
       setCookieClientSideFn('accessToken', res.data.accessToken);
+      setCookieClientSideFn('currentUser', res.data.currentUser);
       router.push('/');
     } catch (err) {
       console.error(err);
@@ -52,96 +53,99 @@ const RegistrationView: FC<IRegistrationViewProps> = () => {
           onSubmit={handleSubmit}
           validationSchema={RegistrationSchema}
         >
-          <Form className='flex flex-col gap-4'>
-            <div>
-              <Label
-                htmlFor='firstName'
-                className='block text-sm font-medium text-gray-700'
-              >
-                First Name
-              </Label>
-              <Field
-                id='firstName'
-                type='text'
-                name='firstName'
-                required
-                className='mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-500'
-              />
-              <ErrorMessage
-                name='firstName'
-                component='div'
-                className='text-red-500'
-              />
-            </div>
-            <div>
-              <Label
-                htmlFor='lastName'
-                className='block text-sm font-medium text-gray-700'
-              >
-                Last Name
-              </Label>
-              <Field
-                id='lastName'
-                type='text'
-                name='lastName'
-                required
-                className='mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-500'
-              />
-              <ErrorMessage
-                name='lastName'
-                component='div'
-                className='text-red-500'
-              />
-            </div>
-            <div>
-              <Label
-                htmlFor='email'
-                className='block text-sm font-medium text-gray-700'
-              >
-                Email
-              </Label>
-              <Field
-                id='email'
-                type='text'
-                name='email'
-                required
-                className='mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-500'
-              />
-              <ErrorMessage
-                name='email'
-                component='div'
-                className='text-red-500'
-              />
-            </div>
-            <div>
-              <Label
-                htmlFor='password'
-                className='block text-sm font-medium text-gray-700'
-              >
-                Password
-              </Label>
-              <Field
-                id='password'
-                type='password'
-                name='password'
-                required
-                className='mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-500'
-              />
-              <ErrorMessage
-                name='password'
-                component='div'
-                className='text-red-500 mt-4'
-              />
-            </div>
-            <div>
-              <Button
-                type='submit'
-                className='w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition'
-              >
-                Sign Up
-              </Button>
-            </div>
-          </Form>
+          {({ isSubmitting }) => (
+            <Form className='flex flex-col gap-4'>
+              <div>
+                <Label
+                  htmlFor='firstName'
+                  className='block text-sm font-medium text-gray-700'
+                >
+                  First Name
+                </Label>
+                <Field
+                  id='firstName'
+                  type='text'
+                  name='firstName'
+                  required
+                  className='mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-500'
+                />
+                <ErrorMessage
+                  name='firstName'
+                  component='div'
+                  className='text-red-500'
+                />
+              </div>
+              <div>
+                <Label
+                  htmlFor='lastName'
+                  className='block text-sm font-medium text-gray-700'
+                >
+                  Last Name
+                </Label>
+                <Field
+                  id='lastName'
+                  type='text'
+                  name='lastName'
+                  required
+                  className='mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-500'
+                />
+                <ErrorMessage
+                  name='lastName'
+                  component='div'
+                  className='text-red-500'
+                />
+              </div>
+              <div>
+                <Label
+                  htmlFor='email'
+                  className='block text-sm font-medium text-gray-700'
+                >
+                  Email
+                </Label>
+                <Field
+                  id='email'
+                  type='text'
+                  name='email'
+                  required
+                  className='mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-500'
+                />
+                <ErrorMessage
+                  name='email'
+                  component='div'
+                  className='text-red-500'
+                />
+              </div>
+              <div>
+                <Label
+                  htmlFor='password'
+                  className='block text-sm font-medium text-gray-700'
+                >
+                  Password
+                </Label>
+                <Field
+                  id='password'
+                  type='password'
+                  name='password'
+                  required
+                  className='mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-500'
+                />
+                <ErrorMessage
+                  name='password'
+                  component='div'
+                  className='text-red-500 mt-4'
+                />
+              </div>
+              <div>
+                <Button
+                  disabled={isSubmitting}
+                  type='submit'
+                  className='w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition'
+                >
+                  {isSubmitting ? 'Signing Up...' : 'Sign Up'}
+                </Button>
+              </div>
+            </Form>
+          )}
         </Formik>
       </div>
     </div>

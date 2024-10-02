@@ -1,31 +1,25 @@
-
-
-import { Chat } from '@/app/entity/Chat';
+import { Message } from '@/app/entity/Message';
 import { Room } from '@/app/entity/Room';
 import { User } from '@/app/entity/User';
 import { DataSource } from 'typeorm';
 
-
- export const AppDataSource = new DataSource({
-  type: 'mysql', 
+export const AppDataSource = new DataSource({
+  type: 'mysql',
   host: process.env.NEXT_PUBLIC_DATABASE_HOST,
-  port:3306,
+  port: 3306,
   username: process.env.NEXT_PUBLIC_DATABASE_USERNAME,
   password: process.env.NEXT_PUBLIC_DATABASE_PASSWORD,
   database: process.env.NEXT_PUBLIC_DATABASE_NAME,
   synchronize: true,
   logging: true,
-  entities: [User,Chat,Room], 
+  entities: [User, Message, Room],
   subscribers: [],
   migrations: [],
 });
 
-
-
-export const getDataSource = async (): Promise<DataSource>=> {
-  if(!AppDataSource.isInitialized)
-  {
-    await AppDataSource.initialize()
+export const getDataSource = async (): Promise<DataSource> => {
+  if (!AppDataSource.isInitialized) {
+    await AppDataSource.initialize();
   }
-  return AppDataSource
+  return AppDataSource;
 };

@@ -1,17 +1,26 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToMany,
+  JoinTable,
+  OneToMany,
+} from 'typeorm';
+import { User } from './User';
+import { Message } from './Message';
 
 @Entity()
 export class Room {
-    @PrimaryGeneratedColumn()
-    id!: number;
+  @PrimaryGeneratedColumn()
+  id!: number;
 
-    @Column({ nullable: false }) 
-    name!: string; 
+  @Column()
+  name!: string;
 
-    @Column({ nullable: false }) 
-    createdAt!: Date;
+  @ManyToMany(() => User)
+  @JoinTable()
+  participants!: User[];
 
-    @Column({ nullable: false }) 
-    createdBy!: string;
-
+  @OneToMany(() => Message, message => message.room, { lazy: true })
+  messages!: Promise<Message[]>;
 }
