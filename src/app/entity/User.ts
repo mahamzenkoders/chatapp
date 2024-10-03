@@ -24,6 +24,4 @@ export class User {
   @Column({ type: 'timestamp', nullable: true })
   otpExpires?: Date;
 
-  @OneToMany(() => Message, message => message.sender, { lazy: true })
-  messages!: Promise<Message[]>;
 }

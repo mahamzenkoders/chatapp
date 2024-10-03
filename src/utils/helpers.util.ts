@@ -2,6 +2,9 @@
  * General utility functions.
  */
 
+import { ITokenPayLoad } from "@/types/Interfaces/token.payload";
+import jwt from 'jsonwebtoken'
+
 /**
  * Formats a date to a string.
  *
@@ -19,6 +22,14 @@ export const formatDate = (date: Date): string => {
   // Add date formatting logic here
   return date.toISOString();
 };
+
+
+export const getTokenData = async (token: string): Promise<ITokenPayLoad> => {
+  const data = await jwt.verify(token, "maham");
+
+  return data as ITokenPayLoad;
+};
+
 
 /**
  * Capitalize the first letter of a string.
