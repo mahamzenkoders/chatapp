@@ -4,7 +4,7 @@ import { io } from 'socket.io-client';
 
 const SocketComponent = () => {
   useEffect(() => {
-    const socket = io('http://localhost:3000/api/socket/io', {
+    const socket = io('http://localhost:5000', {
       transports: ['websocket'],
     });
 
