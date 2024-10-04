@@ -1,8 +1,4 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-} from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity()
 export class Room {
@@ -16,5 +12,5 @@ export class Room {
   participants!: number;
 
   @Column()
-  createdBy!:string
+  createdBy!: string;
 }

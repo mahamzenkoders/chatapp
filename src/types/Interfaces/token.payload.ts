@@ -1,3 +1,3 @@
-export interface ITokenPayLoad{
-    id:string
+export interface ITokenPayLoad {
+  id: string;
 }

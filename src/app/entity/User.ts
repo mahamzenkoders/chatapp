@@ -23,5 +23,4 @@ export class User {
 
   @Column({ type: 'timestamp', nullable: true })
   otpExpires?: Date;
-
 }
