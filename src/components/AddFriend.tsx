@@ -21,6 +21,15 @@ const AddFriend: React.FC<AddFriendProps> = ({ closeDialog }) => {
     const token = getCookieFn('accessToken');
     const user = getCookieFn('currentUser');
     let firstName = '';
+    let userObject;
+    try {
+      userObject = user ? JSON.parse(user) : null;
+    } catch (error) {
+      console.error('Error parsing user cookie:', error);
+      userObject = null;
+    }
+
+    const userId = userObject?.id;
 
     try {
       const userObject = user ? JSON.parse(user) : null;
@@ -35,9 +44,9 @@ const AddFriend: React.FC<AddFriendProps> = ({ closeDialog }) => {
     socket.emit(
       'CREATE_ROOM',
       {
-        type: 'direct',
+        createdBy: userId,
         participants: [id],
-        name: `${name} ${firstName} Chat`,
+        roomName: `${name} ${firstName} Chat`,
       },
       (res: any) => {
         toast.success('Friend Added Successfully', {
@@ -60,7 +69,7 @@ const AddFriend: React.FC<AddFriendProps> = ({ closeDialog }) => {
     try {
       const token = getCookieFn('accessToken');
       const res = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/users/search/${search}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/users/search/${search}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

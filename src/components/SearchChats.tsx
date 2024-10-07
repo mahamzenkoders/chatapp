@@ -27,7 +27,6 @@ const SearchChats = () => {
     socket.emit(
       'JOIN_SINGLE_ROOM',
       {
-        type: 'direct',
         roomId: roomID,
       },
       (res: any) => {
@@ -40,11 +39,14 @@ const SearchChats = () => {
   const fetchRooms = async () => {
     try {
       const token = getCookieFn('accessToken');
-      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/rooms`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
+      const res = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/rooms`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         },
-      });
+      );
       console.log(res.data);
       setChats(res.data);
     } catch (error) {

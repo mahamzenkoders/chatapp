@@ -6,6 +6,7 @@ import { getDataSource } from "./src/source/data.source";
 import { Room } from "./src/app/entity/Room";
 import { getTokenData } from "./src/utils/helpers.util";
 import { Message } from "./src/app/entity/Message";
+import { Friend } from "./src/app/entity/Friend";
 
 
 const app = express();
@@ -20,6 +21,7 @@ const io = new Server(server, {
 app.use(cors());
 
 io.on("connection", (socket: Socket) => {
+
   console.log("A user connected",socket.id);
 
   socket.on("CREATE_ROOM", async ({ roomName, participants, createdBy }) => {
@@ -28,11 +30,18 @@ io.on("connection", (socket: Socket) => {
      const token = await getTokenData(headers || '');
       const connection = await getDataSource();
       const roomRepository = connection.getRepository(Room);
+      const friendRepository = connection.getRepository(Friend);
 
+      const friend=new Friend();
+      friend.userId=token.id;
+      friend.friendId=participants;
+      const savedFriend = await friendRepository.save(friend);
+      console.log("Friend created:", savedFriend);
       const room = new Room();
       room.name = roomName;
-      room.participants = participants; 
+      room.participantId = participants; 
       room.createdBy = token.id;
+
 
       const savedRoom = await roomRepository.save(room);
       console.log("Room created:", savedRoom);
@@ -74,9 +83,7 @@ io.on("connection", (socket: Socket) => {
       console.log("MESSAGE SAVED",savedMessage)
 
        io.to(roomId).emit("RECEIVE_MESSAGES", {
-        roomId,
         message: savedMessage,
-        senderId
       });
     }
 

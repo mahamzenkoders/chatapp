@@ -2,7 +2,6 @@
 import React, { useEffect } from 'react';
 import SearchChats from '@/components/SearchChats';
 import { useState } from 'react';
-import io from 'socket.io-client';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import AddFriend from '@/components/AddFriend';
 import MessageSection from '@/components/messagesection';

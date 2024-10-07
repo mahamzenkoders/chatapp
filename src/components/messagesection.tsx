@@ -1,20 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { useSearchParams } from 'next/navigation';
 import { SendHorizontal } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { getCookieFn, removeCookie } from '@/utils/storage.util';
+import { getCookieFn } from '@/utils/storage.util';
 import axios from 'axios';
 import { socket } from '@/app/socket/socketconfig';
 
 interface SendMessage {
-  roomId: string;
-  text: string;
-  createdBy: string;
   id: string;
+  roomId: string;
+  message: string;
+  senderId: string;
   createdAt: string;
-  updatedAt: string;
 }
 
 const MessageSection = () => {
@@ -33,14 +32,13 @@ const MessageSection = () => {
   }
 
   const userId = userObject?.id;
-
-  const [sendmsg, setSendMsg] = useState<SendMessage[] | []>([]);
+  const [sendmsg, setSendMsg] = useState<SendMessage[]>([]);
   const [input, setInput] = useState<string>('');
 
   const responseMessage = async () => {
     if (roomID) {
       const res = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/messages/room/${roomID}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/messages/room/${roomID}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -53,24 +51,38 @@ const MessageSection = () => {
 
   useEffect(() => {
     responseMessage();
-  }, [roomID, sendmsg]);
+
+    if (roomID) {
+      console.log(`Joining room: ${roomID}`);
+      socket.emit('JOIN_SINGLE_ROOM', { roomId: roomID });
+    }
+
+    return () => {
+      console.log(`Leaving room: ${roomID}`);
+    };
+  }, [roomID]);
 
   useEffect(() => {
-    socket.on('RECEIVED_MESSAGE', (res: SendMessage) => {
-      console.log('Received message:');
-      setSendMsg(prev => [...prev, res]);
+    socket.on('RECEIVE_MESSAGES', (res: { message: SendMessage }) => {
+      console.log('Received message:', res);
+      setSendMsg(prev => [...prev, res.message]);
     });
+
+    return () => {
+      socket.off('RECEIVE_MESSAGES OFF');
+    };
   }, []);
 
-  const handleClick = async () => {
+  const handleClick = () => {
     if (input) {
-      socket.emit(
-        'NEW_MESSAGE',
-        { roomId: roomID, message: input },
-        (res: boolean) => {
-          console.log(res);
-        },
-      );
+      const messageData = { roomId: roomID, message: input, senderId: userId };
+      socket.emit('NEW_MESSAGE', messageData, (response: boolean) => {
+        if (response) {
+          console.log('Message sent successfully');
+        } else {
+          console.error('Failed to send message');
+        }
+      });
 
       setInput('');
     }
@@ -92,16 +104,16 @@ const MessageSection = () => {
         </div>
 
         <div className='flex flex-col space-y-2 p-4 overflow-y-auto h-[calc(100vh-150px)] scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200'>
-          {sendmsg.map(sendmsgs => (
+          {sendmsg.map((sendmsgs, index) => (
             <div
-              key={sendmsgs.id}
+              key={index}
               className={`p-3 rounded-lg ${
-                userId === sendmsgs.createdBy
+                userId === sendmsgs.senderId
                   ? 'self-end bg-blue-600 text-white'
                   : 'bg-gray-600 text-white self-start'
               } max-w-xs`}
             >
-              <p>{sendmsgs.text}</p>
+              <p>{sendmsgs.message}</p>
               <span className='text-xs text-gray-300'>
                 {new Date(sendmsgs.createdAt).toLocaleTimeString('en-US', {
                   hour: '2-digit',

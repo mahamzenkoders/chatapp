@@ -1,19 +1,13 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity()
-export class Message {
+export class Friend {
   @PrimaryGeneratedColumn()
   id!: number;
 
   @Column()
-  message!: string;
+  userId!: string;
 
   @Column()
-  createdAt!: Date;
-
-  @Column()
-  roomId!: number;
-
-  @Column()
-  senderId!: number;
+  friendId!: number;
 }

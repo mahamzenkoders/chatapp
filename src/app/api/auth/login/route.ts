@@ -47,7 +47,7 @@ export const POST = async (req: NextRequest) => {
       );
     }
     const accessToken = jwt.sign({ id: user.id }, SECRET_KEY, {
-      expiresIn: '1h',
+      expiresIn: '24h',
     });
 
     return NextResponse.json(

@@ -9,7 +9,7 @@ export class Room {
   name!: string;
 
   @Column()
-  participants!: number;
+  participantId!: number;
 
   @Column()
   createdBy!: string;

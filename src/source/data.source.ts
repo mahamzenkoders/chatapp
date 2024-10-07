@@ -1,3 +1,4 @@
+import { Friend } from '../app/entity/Friend';
 import { Message } from '../app/entity/Message';
 import { Room } from '../app/entity/Room';
 import { User } from '../app/entity/User';
@@ -12,7 +13,7 @@ export const AppDataSource = new DataSource({
   database: 'zen_chat',
   synchronize: true,
   logging: true,
-  entities: [User, Message, Room],
+  entities: [User, Message, Room,Friend],
   subscribers: [],
   migrations: [],
 });
