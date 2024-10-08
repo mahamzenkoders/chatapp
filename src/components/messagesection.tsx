@@ -7,14 +7,7 @@ import { Input } from '@/components/ui/input';
 import { getCookieFn } from '@/utils/storage.util';
 import axios from 'axios';
 import { socket } from '@/app/socket/socketconfig';
-
-interface SendMessage {
-  id: string;
-  roomId: string;
-  message: string;
-  senderId: string;
-  createdAt: string;
-}
+import { SendMessage } from '@/types/Interfaces/send.message';
 
 const MessageSection = () => {
   const token = getCookieFn('accessToken');

@@ -21,9 +21,9 @@ export const GET = async (req: NextRequest, { params }: { params: Params }) => {
 
     const token = auth.split(' ')[1];
 
-    const connection = await getDataSource()
+    const connection = await getDataSource();
     const messages = await connection.getRepository(Message).find({
-      where: { roomId: Number(id) }, 
+      where: { roomId: Number(id) },
     });
     return NextResponse.json(messages);
   } catch (error) {

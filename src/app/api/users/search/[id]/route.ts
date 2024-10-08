@@ -6,28 +6,28 @@ import { In, Like, Not } from 'typeorm';
 import { Friend } from '@/app/entity/Friend';
 import { Params } from '@/types/Interfaces/params';
 
-export const GET = async (req: NextRequest,{params}:{params:Params}) => {
+export const GET = async (req: NextRequest, { params }: { params: Params }) => {
   try {
     const { id } = params;
-    console.log(id)
+    console.log(id);
     const auth = req.headers.get('Authorization');
-    if (!auth || !auth.startsWith("Bearer ")) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    if (!auth || !auth.startsWith('Bearer ')) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
-    const token = auth.split(" ")[1];
-    const data = await jwt.verify(token, 'maham') as JwtPayload;
+    const token = auth.split(' ')[1];
+    const data = (await jwt.verify(token, 'maham')) as JwtPayload;
 
     const connection = await getDataSource();
 
-    const friend=await connection.getRepository(Friend).find({
-      where:{userId:data.id},
-      select:["friendId"]
-    })
+    const friend = await connection.getRepository(Friend).find({
+      where: { userId: data.id },
+      select: ['friendId'],
+    });
 
-    const friendIds=friend.map(friend=>friend.friendId)
+    const friendIds = friend.map(friend => friend.friendId);
     const numericId = parseInt(id, 10);
-    
+
     const users = await connection.getRepository(User).find({
       where: [
         {
@@ -44,7 +44,10 @@ export const GET = async (req: NextRequest,{params}:{params:Params}) => {
 
     return NextResponse.json(users);
   } catch (err) {
-    console.error("Error Fetching Users:", err);
-    return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
+    console.error('Error Fetching Users:', err);
+    return NextResponse.json(
+      { message: 'Internal Server Error' },
+      { status: 500 },
+    );
   }
 };

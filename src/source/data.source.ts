@@ -13,7 +13,7 @@ export const AppDataSource = new DataSource({
   database: 'zen_chat',
   synchronize: true,
   logging: true,
-  entities: [User, Message, Room,Friend],
+  entities: [User, Message, Room, Friend],
   subscribers: [],
   migrations: [],
 });

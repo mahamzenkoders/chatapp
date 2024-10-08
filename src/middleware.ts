@@ -9,7 +9,7 @@ export function middleware(req: NextRequest) {
   if (pathname === '/') {
     return NextResponse.redirect(new URL('/chat', req.url));
   }
-  const publicRoutes = ['/auth/register', '/auth/register'];
+  const publicRoutes = ['/auth/login', '/auth/register'];
 
   const protectedRoutes = ['/', '/chat'];
 
